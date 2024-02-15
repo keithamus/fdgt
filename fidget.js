@@ -234,6 +234,10 @@ class FidgetElement extends HTMLElement {
 {
 	const styles = new CSSStyleSheet()
 	styles.replaceSync(css`
+    :host {
+      position: relative;
+      --fidget-menu-offset-pos: 7px;
+    }
 		button {
 			display: flex;
 			width: 100%;
@@ -255,9 +259,10 @@ class FidgetElement extends HTMLElement {
 		}
 		[part=menu] {
 			display: flex;
+      padding: 2px;
 			flex-direction: column;
 			position: absolute;
-			inset: calc(var(--top, 0px) + 8px) auto auto var(--left, 0px);
+			inset: calc(var(--top, 0px) + var(--fidget-menu-offset-pos)) auto auto var(--left, 0px);
 			border-radius: 3px;
 			border: 1px solid transparent;
 			box-shadow: 0 0 8px var(--fidget-menu-popup-sh, var(--fidget-sh-2));
@@ -274,6 +279,9 @@ class FidgetElement extends HTMLElement {
 		:host(:where(:state(open),:--open,[state-open])) button svg, button:active svg {
 			rotate: 180deg;
 		}
+    :host [part=menu]:not(:where(:popover-open)) {
+      inset: calc(35px + var(--fidget-menu-offset-pos)) auto auto 0;
+    }
 	`)
 	const template = html`
 		<button part="button">
