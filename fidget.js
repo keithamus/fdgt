@@ -78,7 +78,7 @@ class FidgetElement extends HTMLElement {
 
 	attachInternals() {
 		const internals = super.attachInternals()
-		internals.states = new StateSet(this, internals.states)
+    Object.defineProperty(internals, 'states', {value: new StateSet(this, internals.states)})
 		return internals
 	}
 
@@ -257,7 +257,6 @@ class FidgetElement extends HTMLElement {
 			display: flex;
 			flex-direction: column;
 			position: absolute;
-			inset: var(--top, 0px) auto auto calc(var(--left, 0px) + 4px);
 			inset: calc(var(--top, 0px) + 8px) auto auto var(--left, 0px);
 			border-radius: 3px;
 			border: 1px solid transparent;
@@ -341,8 +340,8 @@ class FidgetElement extends HTMLElement {
 	const styles = new CSSStyleSheet()
 	styles.replaceSync(css`
 		:host {
-			--xc: clamp(0px, var(--left, 25px), calc(100vw - var(--width, 20px) + 2px)) !important;
-			--yc: clamp(0px, var(--top, 25px), calc(100vh - 50px)) !important;
+			--xc: clamp(0px, var(--left, 25px), calc(100vw - var(--width, 20px))) !important;
+			--yc: clamp(0px, var(--top, 25px), calc(100vh - 41px)) !important;
 			position: absolute;
 			display: flex;
 			border: 1px solid var(--fidget-control-br, var(--border-1));
@@ -355,6 +354,9 @@ class FidgetElement extends HTMLElement {
 			overflow: hidden;
 			transform: translate3d(var(--xc), var(--yc), 0);
 			transition: width 100ms ease-in;
+      width: fit-content;
+      height: fit-content;
+      inset: 0;
 		}
 		[part=controls] {
 			display: flex;
@@ -456,18 +458,18 @@ class FidgetElement extends HTMLElement {
 			}
 			if (event.type == 'pointermove' && this.#states.has('dragging')) { this.#move(event) }
 			if (event.type == 'click' && event.target.closest('[part=expand]')) {
-				if (!this.#states.has('overflow') && !this.#states.has('--overflow')) {
+				if (!this.#states.has('overflow')) {
 					this.collapse()
 				} else if (!this.#reflow()) {
-					try { this.#states.add('reflow-nudge') } catch { this.#states.add('--reflow-nudge') }
-					setTimeout(() => (this.#states.delete('reflow-nudge'), this.#states.delete('--reflow-nudge')), 200)
+					this.#states.add('reflow-nudge')
+					setTimeout(() => this.#states.delete('reflow-nudge'), 200)
 				}
 			}
 		}
 
 		#startDrag(event) {
 			if (!event.target.closest('[part=grip]')) return
-			try { this.#states.add('dragging') } catch { this.#states.add('--dragging') }
+			this.#states.add('dragging')
 			const rect = this.getBoundingClientRect()
 			this.style.setProperty('--width', `${rect.width}px`, 'important')
 			this.#offsetX = event.clientX - rect.left
@@ -480,38 +482,50 @@ class FidgetElement extends HTMLElement {
 			this.style.setProperty('--top', `${event.clientY - this.#offsetY}px`, 'important')
 			this.style.setProperty('--left', `${event.clientX - this.#offsetX}px`, 'important')
 			const rect = this.getBoundingClientRect()
-			if (rect.right > window.innerWidth) {
+			if (rect.right + 10 >= window.innerWidth) {
 				this.#reflow()
 			}
 		}
 
 		#endDrag() {
 			this.#states.delete('dragging')
-			this.#states.delete('--dragging')
 		}
 
 		#reflow() {
 			if (!this.shadowRoot) return
 			const moreSlot = this.shadowRoot.querySelector('slot[part=more]')
 			let len = moreSlot.assignedNodes().length
+      const controls = this.shadowRoot.querySelector('slot[part=controls]')
+			controls.assign()
 			const rect = this.getBoundingClientRect()
-			let allowableWidth =
-				window.innerWidth -
-				rect.left - 
-				(rect.width - (this.shadowRoot.querySelector('[part=controls]').getBoundingClientRect().width || 0))
-			let overflow = []
-			this.shadowRoot.querySelector('slot[part=controls]').assign(...this.children)
-			for (const el of this.children) {
-				allowableWidth -= (el.getBoundingClientRect().width)
-				if (allowableWidth < 0) overflow.push(el)
-			}
-			this.shadowRoot.querySelector('slot[part=more]').assign(...overflow)
+      const controlsRect = controls.getBoundingClientRect()
+			let allowableWidth = window.innerWidth - rect.left - rect.width
+      let didOverflow = false
+      if (allowableWidth > 10) {
+        let mainflow = []
+        let overflow = []
+        for (const el of this.children) {
+          if (!overflow.length) {
+            mainflow.push(el)
+            controls.assign(...mainflow)
+            if (controls.getBoundingClientRect().width >= allowableWidth) {
+              overflow.push(mainflow.pop())
+            }
+          } else {
+            overflow.push(el)
+          }
+        }
+        didOverflow = overflow.length > 0
+        moreSlot.assign(...overflow)
+      } else {
+        didOverflow = true
+        moreSlot.assign(...this.children)
+      }
 			this.style.setProperty('--width', `${this.getBoundingClientRect().width}px`, 'important')
-			if (overflow.length) {
-				try { this.#states.add('overflow') } catch { this.#states.add('--overflow') }
+			if (didOverflow) {
+				this.#states.add('overflow')
 			} else {
 				this.#states.delete('overflow')
-				this.#states.delete('--overflow')
 			}
 			return len != moreSlot.assignedNodes().length
 		}
@@ -519,7 +533,7 @@ class FidgetElement extends HTMLElement {
 		collapse() {
 			this.shadowRoot.querySelector('slot[part=more]').assign(...this.children)
 			this.style.setProperty('--width', `${this.getBoundingClientRect().width}px`, 'important')
-			try { this.#states.add('overflow') } catch { this.#states.add('--overflow') }
+			this.#states.add('overflow')
 		}
 
 	})
