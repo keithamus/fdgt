@@ -183,10 +183,10 @@ class FidgetElement extends HTMLElement {
 		[part=track]:hover [part=thumb] {
 			background: var(--fidget-switch-thumb-hover-br, var(--fidget-bg-3));
 		}
-		:host(:not(:where(:state(on),:state(--on),[state-on]))) [part=track] {
+		:host(:not(:where(:state(on),:--on,[state-on]))) [part=track] {
 			background: var(--fidget-switch-track-off-bg, var(--fidget-ac-danger));
 		}
-		:host(:where(:state(on),:state(--on),[state-on])) [part=thumb] {
+		:host(:where(:state(on),:--on,[state-on])) [part=thumb] {
 			transform: translateX(40px);
 		}
 	`)
@@ -264,14 +264,14 @@ class FidgetElement extends HTMLElement {
 			background: var(--fidget-menu-popup-bg, var(--fidget-bg-3));
 			min-width: 100px;
 		}
-		:host(:not(:where(:state(open),:state(--open),[state-open]))) [part=menu] {
+		:host(:not(:where(:state(open),:--open,[state-open]))) [part=menu] {
 			display: none;
 		}
-		:host(:where(:state(open),:state(--open),[state-open])) button, button:active {
+		:host(:where(:state(open),:--open,[state-open])) button, button:active {
 			background: var(--fidget-menu-button-active-br, var(--fidget-bg-1));
 			box-shadow: 0 0 3px var(--fidget-menu-button-active-sh, var(--fidget-sh-1)) inset;
 		}
-		:host(:where(:state(open),:state(--open),[state-open])) button svg, button:active svg {
+		:host(:where(:state(open),:--open,[state-open])) button svg, button:active svg {
 			rotate: 180deg;
 		}
 	`)
@@ -351,7 +351,6 @@ class FidgetElement extends HTMLElement {
 			border-radius: 3px;
 			margin: 0;
 			padding: 0;
-			overflow: hidden;
 			transform: translate3d(var(--xc), var(--yc), 0);
 			transition: width 100ms ease-in;
       width: fit-content;
@@ -387,15 +386,15 @@ class FidgetElement extends HTMLElement {
 			display: block;
 			border-left: 1px solid var(--fidget-control-sep-br, var(--fidget-br-1));
 			border-right: 1px solid var(--fidget-control-sep-sh, var(--fidget-sh-1));
-			margin: -6px 4px;
+			margin: 0 4px;
 		}
-		:host(:where(:state(dragging),:state(--dragging),[state-dragging])) {
+		:host(:where(:state(dragging),:--dragging,[state-dragging])) {
 			cursor: grabbing;
 		}
-		:host(:where(:state(overflow),:state(--overflow),[state-overflow])) [part=expand] svg {
+		:host(:where(:state(overflow),:--overflow,[state-overflow])) [part=expand] svg {
 			rotate: 180deg;
 		}
-		:host(:where(:state(reflow-nudge),:state(--reflow-nudge),[state-reflow-nudge])) [part=expand] svg {
+		:host(:where(:state(reflow-nudge),:--reflow-nudge,[state-reflow-nudge])) [part=expand] svg {
 			color: var(--fidget-control-expand-nudge-fg, var(--fidget-ac-danger));
 			animation: reflow-nudge 100ms infinite ease-in-out;
 		}
