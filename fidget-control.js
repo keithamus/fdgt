@@ -158,12 +158,17 @@ customElements.define('fidget-control', class extends FidgetElement {
     const grip = this.shadowRoot.querySelector('[part=grip]')
     if (event.code == 'Enter' || event.code == 'Space') {
       grip.setAttribute('aria-pressed', 'true')
-      grip.addEventListener('focusout', () => grip.setAttribute('aria-pressed', 'false'))
+      grip.querySelector('fidget-icon').setAttribute('name', 'move')
+      grip.addEventListener('focusout', () => {
+        grip.setAttribute('aria-pressed', 'false')
+        grip.querySelector('fidget-icon').setAttribute('name', 'grip')
+      })
       return
     }
     if (grip.getAttribute('aria-pressed') !== 'true') return
     if (event.code == 'Escape' || event.code == 'Enter' || event.code == 'Space' || event.code == 'Tab') {
       grip.setAttribute('aria-pressed', 'false')
+      grip.querySelector('fidget-icon').setAttribute('name', 'grip')
       return
     }
     const rect = this.getBoundingClientRect()
