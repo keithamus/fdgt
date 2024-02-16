@@ -4,8 +4,16 @@
 		<script type="module" src="./fidget.js"></script>
 	</head>
 	<body>
-		<fidget-control>
-			<fidget-button label="Open"></fidget-button>
+    <main>
+      <h1>Fidget Demo Page</h1>
+      <p>Fidget is a drop in toolbar to make it easy to control custom elements on a page.</p>
+      <p>This is a demo of it. The toolbar sits below, and it will control this custom spinner component.</p>
+
+      <demo-spinner variant=1></demo-spinner>
+    </main>
+
+		<fidget-control style="--top: 145px">
+			<fidget-button lead-icon="grid" label="Open"></fidget-button>
 			<fidget-switch label="Hidden"></fidget-switch>
 			<fidget-menu label="Variants">
 				<fidget-button label="Spin"></fidget-button>
@@ -20,5 +28,40 @@
 				</fidget-menu>
 			</fidget-menu>
 		</fidget-control>
+
+    <script type="module">
+      const html = String.raw
+      const css = String.raw
+      const style = new CSSStyleSheet()
+      style.replaceSync(css`
+        :host {
+          display: block;
+          margin: 4rem;
+        }
+        [variant] {
+          display: none;
+          animation: spin 1s infinite linear;
+        }
+        @keyframes spin {
+          from { rotate: 0deg; }
+          to { rotate: 360deg; }
+        }
+        :host([variant="1"]) [variant="1"],
+        :host([variant="2"]) [variant="2"],
+        :host([variant="3"]) [variant="3"] { display: block }
+      `)
+      customElements.define('demo-spinner', class extends HTMLElement {
+        constructor() {
+          super()
+          this.attachShadow({mode:'open'})
+          this.shadowRoot.innerHTML = html`
+            <svg variant="1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-loader"><line x1="12" x2="12" y1="2" y2="6"/><line x1="12" x2="12" y1="18" y2="22"/><line x1="4.93" x2="7.76" y1="4.93" y2="7.76"/><line x1="16.24" x2="19.07" y1="16.24" y2="19.07"/><line x1="2" x2="6" y1="12" y2="12"/><line x1="18" x2="22" y1="12" y2="12"/><line x1="4.93" x2="7.76" y1="19.07" y2="16.24"/><line x1="16.24" x2="19.07" y1="7.76" y2="4.93"/></svg>
+            <svg variant="2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-loader-2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            <svg variant="3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+          `
+          this.shadowRoot.adoptedStyleSheets.push(style)
+        }
+      })
+    </script>
 	</body>
 </html>
