@@ -1,7 +1,0 @@
-import './helpers.js'
-import './fidget-element.js'
-import './fidget-icon.js'
-import './fidget-button.js'
-import './fidget-menu.js'
-import './fidget-switch.js'
-import './fidget-control.js'

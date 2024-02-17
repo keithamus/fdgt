@@ -1,0 +1,12 @@
+{
+  "name": "fdgt",
+  "version": "0.1.0",
+  "description": "A drop-in control for component demo pages",
+  "main": "fdgt.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepack": "npx esbuild --bundle fdgt.js > fdgt.min.js"
+  },
+  "author": "Keith Cirkel <https://keithcirkel.co.uk>",
+  "license": "MIT"
+}

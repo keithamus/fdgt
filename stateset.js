@@ -37,3 +37,10 @@ export class StateSet extends Set {
     for(const state of this) this.delete(state)
   }
 }
+const replaceSync = CSSStyleSheet.prototype.replaceSync
+Object.defineProperty(CSSStyleSheet.prototype, 'replaceSync', {
+  value: function (text) {
+    text = text.replace(/:state\(([^\)]+)\)/g, ':where(:state($1), :--$1, [state-$1])')
+    replaceSync.call(this, text)
+  }
+})

@@ -1,67 +1,333 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<script type="module" src="./fidget.js"></script>
+		<script type="module" src="./fdgt.js"></script>
 	</head>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+    p {
+      max-width: 80ch;
+      margin: 0.5rem 0;
+    }
+    h1, h2, h3, h4 {
+      margin: 2rem 0 0 0;
+    }
+    h1:first-child {
+      margin-top: 1rem;
+    }
+  </style>
 	<body>
     <main>
-      <h1>Fidget Demo Page</h1>
-      <p>Fidget is a drop in toolbar to make it easy to control custom elements on a page.</p>
-      <p>This is a demo of it. The toolbar sits below, and it will control this custom spinner component.</p>
+      <h1>Fdgt</h1>
+      <p>"Fdgt" is a drop in toolbar to make it easy to control custom elements on a page.</p>
+      <p>This is a simple demo of it. The toolbar floats on the page and can control a components state.</p>
+      <p>If the toolbar gets in the way, then use the grip to move it.</p>
 
-      <demo-spinner variant=1></demo-spinner>
+      <fdgt-control for="spinner-1">
+        <fdgt-select name="variant" label="Variant">
+          <datalist>
+            <option value=1>Variant 1</option>
+            <option value=2>Variant 2</option>
+            <option value=3>Variant 3</option>
+          </datalist>
+        </fdgt-select>
+      </fdgt-control>
+
+      <demo-spinner id="spinner-1" variant=1></demo-spinner>
+      <script type="module">
+        const html = String.raw
+        const css = String.raw
+        const style = new CSSStyleSheet()
+        style.replaceSync(css`
+          :host {
+            display: block;
+            margin: 2rem;
+            width: fit-content;
+          }
+          :host([hidden]) {
+            display: none;
+          }
+          [variant] {
+            display: none;
+            animation: spin 2s infinite linear;
+          }
+          @keyframes spin {
+            from { rotate: 0deg; }
+            to { rotate: 360deg; }
+          }
+          :host([variant="1"]) [variant="1"],
+          :host([variant="2"]) [variant="2"],
+          :host([variant="3"]) [variant="3"] { display: block }
+        `)
+        customElements.define('demo-spinner', class extends HTMLElement {
+          constructor() {
+            super()
+            this.attachShadow({mode:'open'})
+            this.shadowRoot.innerHTML = html`
+              <svg variant="1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-loader"><line x1="12" x2="12" y1="2" y2="6"/><line x1="12" x2="12" y1="18" y2="22"/><line x1="4.93" x2="7.76" y1="4.93" y2="7.76"/><line x1="16.24" x2="19.07" y1="16.24" y2="19.07"/><line x1="2" x2="6" y1="12" y2="12"/><line x1="18" x2="22" y1="12" y2="12"/><line x1="4.93" x2="7.76" y1="19.07" y2="16.24"/><line x1="16.24" x2="19.07" y1="7.76" y2="4.93"/></svg>
+              <svg variant="2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-loader-2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+              <svg variant="3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+            `
+            this.shadowRoot.adoptedStyleSheets.push(style)
+          }
+        })
+      </script>
+
+      <h2>Usage</h2>
+      <p>(The best example usage is to probably "View Source" on this page, which has a ton of examples).</p>
+      <p>
+        To use this, add the script to the page, and include the <code>&lt;fdgt-control></code>
+        element. By default it doesn't do much, so you'll need to add the controls. Fdgt has the
+        following controls:
+      </p>
+
+      <h3>Control: <code>&lt;fdgt-control></code></h3>
+      <p>
+        This is the root element, all other fdgt elements should be housed inside this. Give it a
+        <code>for=</code> matching the ID of an element on the page, and any controls inside will
+        effect that element.
+      </p>
+      <p>Here's a version of it with no controls, so you can see what it looks like (a bit weird):</p>
+
+      <div id="fdgt-control" style="width: 1px;height:30px;margin-block:1rem"></div>
+      <fdgt-control for="fdgt-control"><i></i></fdgt-control>
+
+      <h3>Icons: <code>&lt;fdgt-icon></code></h3>
+      <p>
+        Fdgt uses a few icons from <a href="https://lucide.dev">lucide.dev</a>, and they're represented by
+        the <code>&lt;fdgt-icon></code> tag. Give it a <code>name=</code> and it'll render the given icon.
+        If you want more icons then <a href="https://github.com/keithamus/fidget/pulls">send a PR</a>.
+      </p>
+
+      <div style="margin:1.5rem; width: fit-content">
+        <fdgt-icon id="icon" name="grip"></fdgt-icon>
+      </div>
+
+      <fdgt-control for="icon">
+        <fdgt-select name="name" label="Icon Name">
+          <datalist>
+            <option value="">None</option>
+            <option lead-icon=close value=close>Close</option>
+            <option lead-icon=more value=more>More</option>
+            <option lead-icon=chevron-left value=chevron-left>Chevron Left</option>
+            <option lead-icon=chevron-down value=chevron-down>Chevron Down</option>
+            <option lead-icon=grip value=grip>Grip</option>
+            <option lead-icon=move value=move>Move</option>
+          </datalist>
+        </fdgt-select>
+      </fdgt-control>
+
+
+      <h3>Buttons: <code>&lt;fdgt-button></code></h3>
+      <p>
+        Fdgt has its own buttons. These are like regular buttons, but you can make them call
+        methods on an element. Give them a <code>label=</code> to assign the label (or use
+        textcontent like normal button). A <code>lead-icon=</code> or <code>trail-icon=</code>
+        will give them an icon. The <code>call=</code> attribute can be a name of a method that
+        the <code>&lgt;fdgt-control</code> is for, and clicking the button calls that method.
+      </p>
+      <p>Here's what the button looks like, next to it are some controls to let you play around with it:</p>
+
+      <div style="margin:1rem; width: fit-content">
+        <fdgt-button id="button" label="Button"></fdgt-button>
+      </div>
+
+      <fdgt-control for="button">
+        <fdgt-select name="lead-icon" label="Leading Icon">
+          <datalist>
+            <option value="">None</option>
+            <option lead-icon=close value=close>Close</option>
+            <option lead-icon=more value=more>More</option>
+            <option lead-icon=chevron-left value=chevron-left>Chevron Left</option>
+            <option lead-icon=chevron-down value=chevron-down>Chevron Down</option>
+            <option lead-icon=grip value=grip>Grip</option>
+            <option lead-icon=move value=move>Move</option>
+          </datalist>
+        </fdgt-select>
+        <fdgt-select name="variant" label="Variant">
+          <datalist>
+            <option>Normal</option>
+            <option value=text>Text</option>
+          </datalist>
+        </fdgt-select>
+        <fdgt-input name="label" label="Label"></fdgt-input>
+        <fdgt-select name="trail-icon" label="Trailing Icon">
+          <datalist>
+            <option value="">None</option>
+            <option trail-icon=close value=close>Close</option>
+            <option trail-icon=more value=more>More</option>
+            <option trail-icon=chevron-left value=chevron-left>Chevron Left</option>
+            <option trail-icon=chevron-down value=chevron-down>Chevron Down</option>
+            <option trail-icon=grip value=grip>Grip</option>
+            <option trail-icon=move value=move>Move</option>
+          </datalist>
+        </fdgt-select>
+      </fdgt-control>
+
+      <h3>Switches <code>&lt;fdgt-switch></code></h3>
+      <p>
+        Fdgt has switches which can toggle attributes. Give them a <code>name=</code> and they'll
+        toggle that attribute. When off, they'll remove the attribute. When on, they'll add it
+        with an empty string value. They can also have a <code>label=</code>.
+      </p>
+
+      <div style="margin:1rem; width: fit-content">
+        <fdgt-switch id="switch" label="A switch"></fdgt-switch>
+      </div>
+
+      <fdgt-control for="switch">
+        <fdgt-input name="label" label="Label"></fdgt-input>
+        <fdgt-button call="toggle" label="toggle()"></fdgt-button>
+      </fdgt-control>
+
+      <h3>Menus <code>&lt;fdgt-menu></code></h3>
+      <p>
+        Menus are good for stuffing less frequently used controls inside. They are comprised of a
+        <code>&lt;fdgt-button></code> and so can take a <code>label=</code>,
+        <code>lead-icon=</code>, and <code>trail-icon=</code>. If <code>trail-icon=</code> isn't 
+        supplied, however, it will default to <code>chevron-down</code>. Just be careful because
+        without a good <code>trail-icon=</code> it can look just like a button, which would
+        be ridiculous. Oh and menus don't take a <code>name=</code>, for that you probably want
+        a <code>&lt;fdgt-select></code>.
+      </p>
+
+      <div style="margin:1rem; width: fit-content">
+        <fdgt-menu id="menu" label="A menu">
+          <p style="width:20ch;padding:0.5rem">
+            You should probably put something useful in here.
+          </p>
+        </fdgt-menu>
+      </div>
+
+      <fdgt-control for="menu">
+        <fdgt-select name="lead-icon" label="Leading Icon">
+          <datalist>
+            <option value="">None</option>
+            <option lead-icon=close value=close>Close</option>
+            <option lead-icon=more value=more>More</option>
+            <option lead-icon=chevron-left value=chevron-left>Chevron Left</option>
+            <option lead-icon=chevron-down value=chevron-down>Chevron Down</option>
+            <option lead-icon=grip value=grip>Grip</option>
+            <option lead-icon=move value=move>Move</option>
+          </datalist>
+        </fdgt-select>
+        <fdgt-input name="label" label="Label"></fdgt-input>
+        <fdgt-select name="trail-icon" label="Trailing Icon">
+          <datalist>
+            <option value="">None</option>
+            <option trail-icon=close value=close>Close</option>
+            <option trail-icon=more value=more>More</option>
+            <option trail-icon=chevron-left value=chevron-left>Chevron Left</option>
+            <option trail-icon=chevron-down value=chevron-down>Chevron Down</option>
+            <option trail-icon=grip value=grip>Grip</option>
+            <option trail-icon=move value=move>Move</option>
+          </datalist>
+        </fdgt-select>
+      </fdgt-control>
+
+      <h3>Selects <code>&lt;fdgt-select></code></h3>
+      <p>
+        Fdgt has select elements, a lot like <code>&lt;select></code> but proably less accessible.
+        Under the hood this is a <code>&lt;fdgt-menu></code> but with more smarts.
+        Like the menu, it can take a <code>label=</code>, <code>lead-icon=</code>,
+        <code>trail-icon=</code> (defaulting to <code>chevron-down</code>) but they also house a
+        <code>&lt;datalist></code> element, which can have a bunch of <code>&lt;option></code>
+        elements inside of it. Like buttons, they can have a <code>lead-icon=</code> or
+        <code>trail-icon=</code>, as can each of the <code>&lt;option></code> elements.
+        The Select menu also adds the <code>[slot=selected-value]</code> slot which default to the
+        label of the <code>&lt;option></code> of the select value. Given a <code>name=</code> this
+        will change an elements attribute to one of the given <code>&lt;option></code>s. This is
+        really useful for attributes limited to known values.
+      </p>
+
+      <div style="margin:1rem; width: fit-content">
+        <fdgt-select id="select" label="A select">
+          <datalist>
+            <option>Option One</option>
+            <option>Option Two</option>
+            <option>... and so on</option>
+          </datalist>
+        </fdgt-select>
+      </div>
+
+      <fdgt-control for="select">
+        <fdgt-select name="lead-icon" label="Leading Icon">
+          <datalist>
+            <option value="">None</option>
+            <option lead-icon=close value=close>Close</option>
+            <option lead-icon=more value=more>More</option>
+            <option lead-icon=chevron-left value=chevron-left>Chevron Left</option>
+            <option lead-icon=chevron-down value=chevron-down>Chevron Down</option>
+            <option lead-icon=grip value=grip>Grip</option>
+            <option lead-icon=move value=move>Move</option>
+          </datalist>
+        </fdgt-select>
+        <fdgt-input name="label" label="Label"></fdgt-input>
+        <fdgt-select name="trail-icon" label="Trailing Icon">
+          <datalist>
+            <option value="">None</option>
+            <option trail-icon=close value=close>Close</option>
+            <option trail-icon=more value=more>More</option>
+            <option trail-icon=chevron-left value=chevron-left>Chevron Left</option>
+            <option trail-icon=chevron-down value=chevron-down>Chevron Down</option>
+            <option trail-icon=grip value=grip>Grip</option>
+            <option trail-icon=move value=move>Move</option>
+          </datalist>
+        </fdgt-select>
+      </fdgt-control>
+
+      <h3>Input <code>&lt;fdgt-input></code></h3>
+      <p>
+        Fdgt has inputs. Under the hood it is <code>&lt;input type=text></code> but it has some
+        familiar mechanics; it can take a <code>label=</code>, <code>lead-icon=</code>,
+        <code>trail-icon=</code>. Giving it a <code>name=</code> will mean the value inside the
+        input is synced to the attribute of that <code>name=</code>. 
+      </p>
+
+      <div style="margin:1rem; width: fit-content">
+        <fdgt-input id="input" label="An input"></fdgt-input>
+      </div>
+
+      <fdgt-control for="input">
+        <fdgt-select name="lead-icon" label="Leading Icon">
+          <datalist>
+            <option value="">None</option>
+            <option lead-icon=close value=close>Close</option>
+            <option lead-icon=more value=more>More</option>
+            <option lead-icon=chevron-left value=chevron-left>Chevron Left</option>
+            <option lead-icon=chevron-down value=chevron-down>Chevron Down</option>
+            <option lead-icon=grip value=grip>Grip</option>
+            <option lead-icon=move value=move>Move</option>
+          </datalist>
+        </fdgt-select>
+        <fdgt-input name="label" label="Label"></fdgt-input>
+        <fdgt-select name="trail-icon" label="Trailing Icon">
+          <datalist>
+            <option value="">None</option>
+            <option trail-icon=close value=close>Close</option>
+            <option trail-icon=more value=more>More</option>
+            <option trail-icon=chevron-left value=chevron-left>Chevron Left</option>
+            <option trail-icon=chevron-down value=chevron-down>Chevron Down</option>
+            <option trail-icon=grip value=grip>Grip</option>
+            <option trail-icon=move value=move>Move</option>
+          </datalist>
+        </fdgt-select>
+      </fdgt-control>
+
+      <h2>FAQ</h2>
+
+      <h3>How do I pronounce "Fdgt"?</h3>
+      <p>It is pronounced 'Advanced Retroflex Encabulating Component Interocitor', or "fdgt" for short.</p>
+
+      <h3>This has a bug!</h3>
+      <p>That's a statement not a question. If you find a bug, fix it and <a href="https://github.com/keithamus/fidget/pulls">send a PR</a>.</p>
+
+      <h3>Can I add more features?</h3>
+      <p>Who me? Or you? <a href="https://github.com/keithamus/fidget/pulls">You can send a pull request</a>.</p>
+
     </main>
 
-		<fidget-control style="--top: 145px">
-			<fidget-button lead-icon="grid" label="Open"></fidget-button>
-			<fidget-switch label="Hidden"></fidget-switch>
-			<fidget-menu label="Variants">
-				<fidget-button label="Spin"></fidget-button>
-				<fidget-menu label="Nested">
-					<fidget-menu label="Menus">
-						<fidget-menu label="For">
-							<fidget-menu label="Days">
-								<fidget-button label="Close"></fidget-button>
-							</fidget-menu>
-						</fidget-menu>
-					</fidget-menu>
-				</fidget-menu>
-			</fidget-menu>
-		</fidget-control>
-
-    <script type="module">
-      const html = String.raw
-      const css = String.raw
-      const style = new CSSStyleSheet()
-      style.replaceSync(css`
-        :host {
-          display: block;
-          margin: 4rem;
-        }
-        [variant] {
-          display: none;
-          animation: spin 1s infinite linear;
-        }
-        @keyframes spin {
-          from { rotate: 0deg; }
-          to { rotate: 360deg; }
-        }
-        :host([variant="1"]) [variant="1"],
-        :host([variant="2"]) [variant="2"],
-        :host([variant="3"]) [variant="3"] { display: block }
-      `)
-      customElements.define('demo-spinner', class extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({mode:'open'})
-          this.shadowRoot.innerHTML = html`
-            <svg variant="1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-loader"><line x1="12" x2="12" y1="2" y2="6"/><line x1="12" x2="12" y1="18" y2="22"/><line x1="4.93" x2="7.76" y1="4.93" y2="7.76"/><line x1="16.24" x2="19.07" y1="16.24" y2="19.07"/><line x1="2" x2="6" y1="12" y2="12"/><line x1="18" x2="22" y1="12" y2="12"/><line x1="4.93" x2="7.76" y1="19.07" y2="16.24"/><line x1="16.24" x2="19.07" y1="7.76" y2="4.93"/></svg>
-            <svg variant="2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-loader-2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-            <svg variant="3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
-          `
-          this.shadowRoot.adoptedStyleSheets.push(style)
-        }
-      })
-    </script>
 	</body>
 </html>

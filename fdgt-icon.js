@@ -1,21 +1,25 @@
 import {css, html} from './helpers.js'
-import {FidgetElement} from './fidget-element.js'
+import {FidgetElement} from './fdgt-element.js'
 
 const styles = css`
-  :host, svg {
+  :host {
     width: 16px;
     height: 16px;
     aspect-ratio: 1/1;
     align-items: center;
+    flex: initial;
   }
 
-  :host([size=24]), :host([size=24]) svg { width: 24px }
-  :host([size=32]), :host([size=32]) svg { width: 32px }
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+
   :host(:not([name])), svg { display: none }
   :host([name=close]) [name=close] { display: block }
   :host([name=more]) [name=more] { display: block }
   :host([name=chevron-left]) [name=chevron-left] { display: block }
-  :host([name=chevron-right]) [name=chevron-right] { display: block }
+  :host([name=chevron-down]) [name=chevron-down] { display: block }
   :host([name=grip]) [name=grip] { display: block }
   :host([name=move]) [name=move] { display: block }
 `
@@ -29,10 +33,14 @@ const template = html`
   <svg role="presentation" name="move" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" x2="22" y1="12" y2="12"/><line x1="12" x2="12" y1="2" y2="22"/></svg>
 `
 
-customElements.define('fidget-icon', class extends FidgetElement {
+customElements.define('fdgt-icon', class extends FidgetElement {
   #internals = this.attachInternals()
   constructor() {
-    super(template, styles, {delegatesFocus: true})
+    super(template, styles)
     this.#internals.role = this.role == 'presentation' ? 'presentation' : 'image'
+  }
+
+  set name(value) {
+    this.setAttribute('name', value)
   }
 })

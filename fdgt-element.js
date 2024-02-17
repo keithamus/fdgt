@@ -5,21 +5,23 @@ const globalStyles = css`
   :root, :host {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
     font-size: 14px;
-    --fidget-bg-1: #39393b;
-    --fidget-bg-2: #2d2d2f;
-    --fidget-bg-3: #505050;
-    --fidget-br-1: #232325;
-    --fidget-sh-1: #2e2e30;
-    --fidget-sh-2: #aaaaaa;
-    --fidget-ac-1: #0ca370;
-    --fidget-ac-danger: #e95e3d;
-    --fidget-fg-1: #a2a2aa;
-    --fidget-radius-1: 3px
+    --fdgt-bg-1: #39393b;
+    --fdgt-bg-2: #2d2d2f;
+    --fdgt-bg-3: #505050;
+    --fdgt-bg-4: #626262;
+    --fdgt-br-1: #232325;
+    --fdgt-sh-1: #2e2e30;
+    --fdgt-sh-2: #aaaaaa;
+    --fdgt-ac-1: #2093fe;
+    --fdgt-ac-danger: #e95e3d;
+    --fdgt-fg-1: #a2a2aa;
+    --fdgt-radius-1: 3px;
+    --fdgt-radius-2: 6px;
+    --fdgt-focus-ring: 2px solid var(--fdgt-ac-1);
   }
 
   :host {
     display: flex;
-    margin: 3px;
     flex: 1;
   }
 `
@@ -45,9 +47,16 @@ export class FidgetElement extends HTMLElement {
   connectedCallback() {
     this.#abortController?.abort()
     this.#abortController = new AbortController()
+    if (this.name) {
+      this.dispatchEvent(new Event('request-value', {bubbles:true}))
+    }
   }
 
   disconnectedCallback() {
     this.#abortController?.abort()
+  }
+
+  get name() {
+    return this.getAttribute('name')
   }
 }
