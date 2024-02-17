@@ -79,9 +79,16 @@
       <p>(The best example usage is to probably "View Source" on this page, which has a ton of examples).</p>
       <p>
         To use this, add the script to the page, and include the <code>&lt;fdgt-control></code>
-        element. By default it doesn't do much, so you'll need to add the controls. Fdgt has the
-        following controls:
+        element. By default it doesn't do much, so you'll need to add the controls.
       </p>
+
+      <pre><code>
+  &lt;script type="module" src="https://esm.sh/fdgt@0.1.0/fdgt.min.js">&lt;/script>
+  &lt;fdgt-control for="my-comp">&lt!-- Put useful controls here -->&lt;/fdgt-control>
+  &lt;my-web-component id="my-comp">&lt;/my-web-component></code></pre>
+
+      <h2>Controls</h2>
+      <p>Fdgt has the following elements:</p>
 
       <h3>Control: <code>&lt;fdgt-control></code></h3>
       <p>
