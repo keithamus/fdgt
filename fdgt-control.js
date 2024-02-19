@@ -24,6 +24,7 @@ const styles = css`
     height: fit-content;
     inset: 0;
     overflow: visible;
+    touch-action: none;
   }
 
   [part=controls] {
@@ -165,7 +166,6 @@ customElements.define('fdgt-control', class extends FidgetElement {
       this.popover = 'manual'
       this.showPopover()
     }
-    window.addEventListener('pointermove', this, {signal})
     this.#observer.observe(this, { childList: true })
     signal.addEventListener('abort', () => this.#observer.unobserve(this))
     this.shadowRoot.adoptedStyleSheets.push(this.#sheet)
@@ -257,6 +257,8 @@ customElements.define('fdgt-control', class extends FidgetElement {
   #startDrag(event) {
     if (event.buttons !== 1 || !event.target.closest('[part=grip]')) return
     this.#states.add('dragging')
+    this.setPointerCapture(event.pointerId)
+    this.addEventListener('pointermove', this)
     const rect = this.getBoundingClientRect()
     this.#style.setProperty('--width', `${rect.width}px`, 'important')
     const doc = this.ownerDocument.documentElement
@@ -279,6 +281,7 @@ customElements.define('fdgt-control', class extends FidgetElement {
   }
 
   #endDrag() {
+    this.removeEventListener('pointermove', this)
     this.#states.delete('dragging')
   }
 
