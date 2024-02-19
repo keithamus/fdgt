@@ -33,6 +33,15 @@ const styles = css`
     color: var(--fdgt-menu-popup-fg, var(--fdgt-fg-1));
   }
 
+  [part=menu][anchor-block=start] {
+    inset-block-start: calc(var(--top, 0px) - var(--fdgt-menu-offset-pos));
+  }
+
+  [part=menu][anchor-inline=end] {
+    inset-inline-start: auto;
+    inset-inline-end: var(--right, auto);
+  }
+
   :host(:state(open)) [part=menu] {
     display: flex;
   }
@@ -52,6 +61,15 @@ const styles = css`
 
   :host [part=menu]:not(:where(:popover-open)) {
     inset: calc(35px + var(--fdgt-menu-offset-pos)) auto auto 0;
+  }
+
+  :host [part=menu][anchor-inline=end]:not(:where(:popover-open)) {
+    inset-inline: auto 0;
+  }
+
+  :host [part=menu][anchor-block=start]:not(:where(:popover-open)) {
+    inset-block: auto 0;
+    margin-bottom: calc(35px + var(--fdgt-menu-offset-pos));
   }
 `
 
@@ -109,8 +127,20 @@ customElements.define('fdgt-menu', class extends FidgetElement {
     const rect = this.getBoundingClientRect()
     menu.style.setProperty('--top', `${document.documentElement.scrollTop + rect.bottom}px`, 'important')
     menu.style.setProperty('--left', `${rect.left}px`, 'important')
+    menu.removeAttribute('anchor-block')
+    menu.removeAttribute('anchor-inline')
     this.#states.add('open')
     menu.showPopover?.()
+    const menuRect = menu.getBoundingClientRect()
+    if (menuRect.right > window.innerWidth) {
+      menu.setAttribute('anchor-inline', 'end')
+      menu.style.setProperty('--left', 'auto', 'important')
+      menu.style.setProperty('--right', `${window.innerWidth - rect.right}px`, 'important')
+    }
+    if (menuRect.bottom > window.innerHeight) {
+      menu.setAttribute('anchor-block', 'start')
+      menu.style.setProperty('--top', `${document.documentElement.scrollTop + (rect.top - menuRect.height)}px`, 'important')
+    }
   }
 
   close() {
