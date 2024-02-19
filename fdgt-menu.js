@@ -107,7 +107,7 @@ customElements.define('fdgt-menu', class extends FidgetElement {
   open() {
     const menu = this.shadowRoot.querySelector('[part=menu]')
     const rect = this.getBoundingClientRect()
-    menu.style.setProperty('--top', `${rect.bottom}px`, 'important')
+    menu.style.setProperty('--top', `${document.documentElement.scrollTop + rect.bottom}px`, 'important')
     menu.style.setProperty('--left', `${rect.left}px`, 'important')
     this.#states.add('open')
     menu.showPopover?.()
