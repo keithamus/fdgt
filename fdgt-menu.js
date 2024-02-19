@@ -22,8 +22,8 @@ const styles = css`
   [part=menu] {
     display: none;
     padding: 2px;
+    position: absolute;
     flex-direction: column;
-    position: fixed;
     inset: calc(var(--top, 0px) + var(--fdgt-menu-offset-pos)) auto auto var(--left, 0px);
     border-radius: 3px;
     border: 1px solid transparent;
