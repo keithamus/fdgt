@@ -149,6 +149,9 @@ customElements.define('fdgt-control', class extends FidgetElement {
     this.addEventListener('change', this)
     this.#internals.role = 'dialog'
     this.#internals.ariaLabel = 'Developer controls'
+    // WebKit has a bug in style invalidation for constructed style sheets
+    // Setting a style attribute fixes this
+    this.style.setProperty('--this-variable-is-for-webkit-style-invalidation-bugs', '1px')
   }
 
   get for() {
