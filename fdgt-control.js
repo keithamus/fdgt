@@ -25,6 +25,8 @@ const styles = css`
     inset: 0;
     overflow: visible;
     touch-action: none;
+    /* For non-popover supporting browsers */
+    z-index: 2147483647;
   }
 
   [part=controls] {
